@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Campus Lost & Found</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-4">
+    <div class="container">
+
+        <!-- Welcome Banner -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon" style="background-color: #0f172a; color: #ffffff; width: 60px; height: 60px; font-size: 1.8rem;">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h4 class="fw-bold mb-0">Campus Security &amp; Admin Panel</h4>
+                            <span class="badge bg-primary text-white">System Admin</span>
+                        </div>
+                        <p class="text-muted small mb-0">Overview of all lost belongings, claims processing, user accounts, and category metrics</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a th:href="@{/admin/reports}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-collection me-1"></i> Reports
+                    </a>
+                    <a th:href="@{/admin/claims}" class="btn btn-warning btn-sm rounded-pill px-3 fw-semibold text-dark">
+                        <i class="bi bi-check2-circle me-1"></i> Claims (<span th:text="${claimStats.pending}">0</span>)
+                    </a>
+                    <a th:href="@{/admin/users}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-people me-1"></i> Users
+                    </a>
+                    <a th:href="@{/admin/categories}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-tags me-1"></i> Categories
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Alerts -->
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-4 mb-4 text-center">
+            <div class="col-6 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #ede9fe; color: #7c3aed;">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0" th:text="${stats.total}">0</h3>
+                    <div class="text-muted small">Total Reports</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #fee2e2; color: #dc2626;">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-danger" th:text="${stats.lost}">0</h3>
+                    <div class="text-muted small">Lost Items</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #dcfce7; color: #16a34a;">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-success" th:text="${stats.found}">0</h3>
+                    <div class="text-muted small">Found Items</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #fef3c7; color: #d97706;">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-warning" th:text="${claimStats.pending}">0</h3>
+                    <div class="text-muted small">Pending Claims</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #e0f2fe; color: #0284c7;">
+                        <i class="bi bi-award"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-primary" th:text="${stats.claimed}">0</h3>
+                    <div class="text-muted small">Resolved / Claimed</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #f1f5f9; color: #334155;">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0" th:text="${totalUsers}">0</h3>
+                    <div class="text-muted small">Registered Users</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities Grid -->
+        <div class="row g-4">
+            <!-- Pending Claims Needing Review -->
+            <div class="col-lg-6">
+                <div class="custom-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+                            <h5 class="fw-bold mb-0">Pending Claims Needing Review</h5>
+                        </div>
+                        <a th:href="@{/admin/claims}" class="small fw-semibold text-decoration-none" style="color: var(--accent-purple);">
+                            Manage All <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(recentClaims)}" class="text-center py-4 text-muted small">
+                        <i class="bi bi-check-all fs-2 text-success d-block mb-1"></i>
+                        No pending claims require attention right now!
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(recentClaims)}" class="d-flex flex-column gap-3">
+                        <div class="p-3 bg-light rounded-3 border" th:each="c : ${recentClaims}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <a th:href="@{'/items/' + ${c.itemReport.id}}" class="fw-bold text-dark text-decoration-none" th:text="${c.itemReport.title}">Item</a>
+                                <span th:if="${c.status.name() == 'PENDING'}" class="badge-status-pending">PENDING</span>
+                                <span th:if="${c.status.name() == 'APPROVED'}" class="badge-status-approved">APPROVED</span>
+                                <span th:if="${c.status.name() == 'REJECTED'}" class="badge-status-rejected">REJECTED</span>
+                            </div>
+                            <div class="small text-muted mb-2">
+                                <strong>Claimer:</strong> <span th:text="${c.claimer.fullName}">Name</span> (<span th:text="${c.contactInfo}">Contact</span>)
+                            </div>
+                            <div class="small text-secondary mb-2 bg-white p-2 rounded border">
+                                <strong>Proof:</strong> <span th:text="${#strings.abbreviate(c.proofDetails, 90)}">Details</span>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a th:href="@{/admin/claims}" class="btn btn-sm btn-primary-custom rounded-pill px-3 py-1">
+                                    Review &amp; Verify
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Reports -->
+            <div class="col-lg-6">
+                <div class="custom-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Latest Campus Reports</h5>
+                        <a th:href="@{/admin/reports}" class="small fw-semibold text-decoration-none" style="color: var(--accent-purple);">
+                            View All <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Posted By</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="r : ${recentReports}">
+                                    <td>
+                                        <a th:href="@{'/items/' + ${r.id}}" class="fw-bold text-dark text-decoration-none" th:text="${r.title}">Item</a>
+                                        <div class="small text-muted" th:text="${r.location}">Location</div>
+                                    </td>
+                                    <td>
+                                        <span th:if="${r.reportType.name() == 'LOST'}" class="badge-lost">LOST</span>
+                                        <span th:if="${r.reportType.name() == 'FOUND'}" class="badge-found">FOUND</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${r.status.name() == 'OPEN'}" class="badge-status-open">OPEN</span>
+                                        <span th:if="${r.status.name() == 'CLAIMED'}" class="badge-status-claimed">CLAIMED</span>
+                                        <span th:if="${r.status.name() == 'CLOSED'}" class="badge-status-closed">CLOSED</span>
+                                    </td>
+                                    <td class="small" th:text="${r.postedBy.fullName}">User</td>
+                                    <td class="text-end">
+                                        <a th:href="@{'/items/' + ${r.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-0">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

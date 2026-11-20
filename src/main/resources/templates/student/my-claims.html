@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Claims - Campus Lost & Found</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-4">
+    <div class="container">
+
+        <!-- Header -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+                <h3 class="fw-bold mb-1">My Submitted Claims</h3>
+                <p class="text-muted small mb-0">Track the verification status of claims you submitted for items</p>
+            </div>
+            <a th:href="@{/items}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-grid me-1"></i> Browse More Items
+            </a>
+        </div>
+
+        <!-- Flash Alerts -->
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+        <!-- Claims Table Card -->
+        <div class="custom-card p-4">
+            <div th:if="${#lists.isEmpty(claims)}" class="text-center py-5">
+                <div class="stat-icon mx-auto mb-3" style="background-color: #f1f5f9; color: #64748b; width: 64px; height: 64px; font-size: 1.8rem;">
+                    <i class="bi bi-shield-slash"></i>
+                </div>
+                <h5 class="fw-bold">No Claims Submitted Yet</h5>
+                <p class="text-muted small">When you identify your lost property among found items, submit a claim request with proof of ownership.</p>
+                <a th:href="@{/items}" class="btn btn-primary-custom btn-sm rounded-pill px-4 mt-2">Browse Found Items</a>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(claims)}" class="table-responsive">
+                <table class="table table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Claim Statement</th>
+                            <th>Proof Details</th>
+                            <th>Submitted Date</th>
+                            <th>Status</th>
+                            <th>Admin Remarks / Next Step</th>
+                            <th class="text-end">View Item</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${claims}">
+                            <td>
+                                <a th:href="@{'/items/' + ${c.itemReport.id}}" class="fw-bold text-dark text-decoration-none" th:text="${c.itemReport.title}">Item</a>
+                                <div class="text-muted small">
+                                    <span th:if="${c.itemReport.reportType.name() == 'LOST'}" class="badge-lost">LOST</span>
+                                    <span th:if="${c.itemReport.reportType.name() == 'FOUND'}" class="badge-found">FOUND</span>
+                                </div>
+                            </td>
+                            <td class="small" th:text="${c.claimDescription}">Description</td>
+                            <td class="small text-secondary" th:text="${c.proofDetails}">Proof details</td>
+                            <td class="small text-muted" th:text="${#temporals.format(c.createdAt, 'dd MMM yyyy, hh:mm a')}">Date</td>
+                            <td>
+                                <span th:if="${c.status.name() == 'PENDING'}" class="badge-status-pending">PENDING REVIEW</span>
+                                <span th:if="${c.status.name() == 'APPROVED'}" class="badge-status-approved">CLAIM APPROVED</span>
+                                <span th:if="${c.status.name() == 'REJECTED'}" class="badge-status-rejected">CLAIM REJECTED</span>
+                            </td>
+                            <td class="small">
+                                <span th:if="${c.adminRemarks != null}" class="text-dark fw-semibold" th:text="${c.adminRemarks}">Remarks</span>
+                                <span th:unless="${c.adminRemarks != null}" class="text-muted fst-italic">Awaiting admin review</span>
+                            </td>
+                            <td class="text-end">
+                                <a th:href="@{'/items/' + ${c.itemReport.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

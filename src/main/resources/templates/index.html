@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Lost & Found Management System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main>
+    <!-- Hero Banner -->
+    <section class="hero-section text-center">
+        <div class="container">
+            <span class="badge px-3 py-2 rounded-pill mb-3" style="background-color: rgba(124, 58, 237, 0.25); color: #c4b5fd; border: 1px solid rgba(167, 139, 250, 0.3);">
+                <i class="bi bi-shield-check me-1"></i> Official Campus Portal
+            </span>
+            <h1 class="hero-title">Campus Lost &amp; Found<br><span style="color: #a78bfa;">Management System</span></h1>
+            <p class="hero-subtitle">
+                Lost your laptop charger, student ID, or keys on campus? Or found something belonging to a classmate? Report it here and help reunite items with their rightful owners!
+            </p>
+
+            <!-- Search Bar in Hero -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <form th:action="@{/items}" method="get" class="p-2 bg-white rounded-pill shadow-lg d-flex align-items-center">
+                        <i class="bi bi-search text-muted ms-3 fs-5"></i>
+                        <input type="text" name="keyword" class="form-control border-0 bg-transparent px-3"
+                               placeholder="Search for lost keys, ID card, headphones, bag..." style="box-shadow: none;">
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-4 py-2 me-1">
+                            Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a th:href="@{/items/report-lost}" class="btn btn-danger px-4 py-2 rounded-pill shadow-sm fw-semibold">
+                    <i class="bi bi-search me-1"></i> I Lost Something
+                </a>
+                <a th:href="@{/items/report-found}" class="btn btn-success px-4 py-2 rounded-pill shadow-sm fw-semibold">
+                    <i class="bi bi-check2-circle me-1"></i> I Found Something
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Flash Alerts -->
+    <div class="container mt-4">
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+    </div>
+
+    <!-- Live Statistics Counter -->
+    <section class="container my-5">
+        <div class="row g-4 text-center">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #ede9fe; color: #7c3aed;">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0" th:text="${stats.total}">0</h3>
+                    <div class="text-muted small">Total Reports</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #fee2e2; color: #dc2626;">
+                        <i class="bi bi-exclamation-circle"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-danger" th:text="${stats.lost}">0</h3>
+                    <div class="text-muted small">Lost Items</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #dcfce7; color: #16a34a;">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-success" th:text="${stats.found}">0</h3>
+                    <div class="text-muted small">Found Items</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #fef3c7; color: #d97706;">
+                        <i class="bi bi-award"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-warning" th:text="${stats.claimed}">0</h3>
+                    <div class="text-muted small">Successfully Reclaimed</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">Browse by Category</h3>
+                <p class="text-muted small mb-0">Quickly locate items by department and category</p>
+            </div>
+            <a th:href="@{/items}" class="text-decoration-none fw-semibold" style="color: var(--accent-purple);">
+                View All <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-6 col-md-4 col-lg-3" th:each="cat : ${categories}">
+                <a th:href="@{/items(categoryId=${cat.id})}" class="text-decoration-none text-dark">
+                    <div class="card h-100 border p-3 rounded-4 shadow-sm text-center" style="transition: all 0.2s;" onmouseover="this.style.borderColor='var(--accent-purple)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='none'">
+                        <i class="bi fs-2 mb-2" th:classappend="${cat.icon != null ? cat.icon : 'bi-folder'}" style="color: var(--accent-purple);"></i>
+                        <h6 class="fw-bold mb-1" th:text="${cat.name}">Category</h6>
+                        <small class="text-muted" th:text="${cat.description}">Description</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Lost & Found Items -->
+    <section class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">Recent Campus Reports</h3>
+                <p class="text-muted small mb-0">Latest lost and found items reported across campus</p>
+            </div>
+            <a th:href="@{/items}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                Browse All Items <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4" th:each="item : ${recentItems}">
+                <div class="item-card">
+                    <!-- Image -->
+                    <div th:if="${item.imageUrl != null}">
+                        <img th:src="${item.imageUrl}" class="item-card-image" th:alt="${item.title}">
+                    </div>
+                    <div th:unless="${item.imageUrl != null}" class="item-card-image-placeholder">
+                        <i class="bi" th:classappend="${item.category != null and item.category.icon != null ? item.category.icon : 'bi-box-seam'}"></i>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-4 d-flex flex-column flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <!-- Report Type Badge -->
+                            <span th:if="${item.reportType.name() == 'LOST'}" class="badge-lost">LOST</span>
+                            <span th:if="${item.reportType.name() == 'FOUND'}" class="badge-found">FOUND</span>
+
+                            <!-- Status Badge -->
+                            <span th:if="${item.status.name() == 'OPEN'}" class="badge-status-open">OPEN</span>
+                            <span th:if="${item.status.name() == 'CLAIMED'}" class="badge-status-claimed">CLAIMED</span>
+                            <span th:if="${item.status.name() == 'CLOSED'}" class="badge-status-closed">CLOSED</span>
+                        </div>
+
+                        <h5 class="fw-bold mb-2">
+                            <a th:href="@{'/items/' + ${item.id}}" class="text-dark text-decoration-none" th:text="${item.title}">Item Title</a>
+                        </h5>
+
+                        <p class="text-muted small mb-3 flex-grow-1" th:text="${#strings.abbreviate(item.description, 95)}">Description...</p>
+
+                        <div class="small text-secondary mb-3 d-flex flex-column gap-1">
+                            <div><i class="bi bi-tag me-1 text-primary"></i> <span th:text="${item.category.name}">Category</span></div>
+                            <div><i class="bi bi-geo-alt me-1 text-danger"></i> <span th:text="${item.location}">Location</span></div>
+                            <div><i class="bi bi-calendar3 me-1 text-warning"></i> <span th:text="${item.itemDate}">2026-05-10</span></div>
+                        </div>
+
+                        <a th:href="@{'/items/' + ${item.id}}" class="btn btn-outline-dark btn-sm rounded-pill w-100 fw-semibold">
+                            View Details &amp; Claim <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(recentItems)}">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <h5 class="mt-2 text-muted">No items reported yet</h5>
+                <p class="small text-secondary">Be the first to report a lost or found item on campus!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="bg-white py-5 border-top border-bottom">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h3 class="fw-bold">How Campus Lost &amp; Found Works</h3>
+                <p class="text-muted">Simple 4-step process for fast and transparent recovery</p>
+            </div>
+
+            <div class="row g-4 text-center">
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="stat-icon mx-auto mb-3" style="background-color: #ede9fe; color: #7c3aed; width: 64px; height: 64px; font-size: 1.8rem;">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <h5 class="fw-bold">1. Report Item</h5>
+                        <p class="small text-muted">Fill out a simple form with item details, location, date, and upload a picture.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="stat-icon mx-auto mb-3" style="background-color: #e0f2fe; color: #0284c7; width: 64px; height: 64px; font-size: 1.8rem;">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h5 class="fw-bold">2. Search &amp; Match</h5>
+                        <p class="small text-muted">Browse listings using filters by category, location, and keywords across campus.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="stat-icon mx-auto mb-3" style="background-color: #fef3c7; color: #d97706; width: 64px; height: 64px; font-size: 1.8rem;">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                        <h5 class="fw-bold">3. Submit Claim</h5>
+                        <p class="small text-muted">Provide proof of ownership (serial number, distinctive marks, password hint, etc.).</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="stat-icon mx-auto mb-3" style="background-color: #dcfce7; color: #16a34a; width: 64px; height: 64px; font-size: 1.8rem;">
+                            <i class="bi bi-check-all"></i>
+                        </div>
+                        <h5 class="fw-bold">4. Verify &amp; Handover</h5>
+                        <p class="small text-muted">Admin reviews the claim, verifies proof, and coordinates secure handover.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

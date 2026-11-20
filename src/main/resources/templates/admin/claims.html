@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Claims - Admin Portal</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-4">
+    <div class="container">
+
+        <!-- Header -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+                <h3 class="fw-bold mb-1"><i class="bi bi-shield-check me-2 text-warning"></i> Manage Claim Requests</h3>
+                <p class="text-muted small mb-0">Review student proof of ownership, approve verified claims, or reject invalid requests</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+        </div>
+
+        <!-- Filter Chips by Status -->
+        <div class="d-flex gap-2 mb-4 flex-wrap">
+            <a th:href="@{/admin/claims}" class="btn btn-sm rounded-pill px-3"
+               th:classappend="${selectedStatus == null} ? 'btn-primary-custom' : 'btn-outline-secondary'">
+                All Claims (<span th:text="${claimStats.total}">0</span>)
+            </a>
+            <a th:href="@{/admin/claims(status='PENDING')}" class="btn btn-sm rounded-pill px-3"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'PENDING'} ? 'btn-warning text-dark' : 'btn-outline-warning text-dark'">
+                Pending (<span th:text="${claimStats.pending}">0</span>)
+            </a>
+            <a th:href="@{/admin/claims(status='APPROVED')}" class="btn btn-sm rounded-pill px-3"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'APPROVED'} ? 'btn-success' : 'btn-outline-success'">
+                Approved (<span th:text="${claimStats.approved}">0</span>)
+            </a>
+            <a th:href="@{/admin/claims(status='REJECTED')}" class="btn btn-sm rounded-pill px-3"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == 'REJECTED'} ? 'btn-danger' : 'btn-outline-danger'">
+                Rejected (<span th:text="${claimStats.rejected}">0</span>)
+            </a>
+        </div>
+
+        <!-- Flash Alerts -->
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+        <!-- Claims Cards List -->
+        <div class="row g-4">
+            <div class="col-12" th:each="c : ${claims}">
+                <div class="custom-card p-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 pb-3 border-bottom">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span th:if="${c.status.name() == 'PENDING'}" class="badge-status-pending">PENDING VERIFICATION</span>
+                                <span th:if="${c.status.name() == 'APPROVED'}" class="badge-status-approved">APPROVED &amp; RESOLVED</span>
+                                <span th:if="${c.status.name() == 'REJECTED'}" class="badge-status-rejected">REJECTED</span>
+                                <span class="text-muted small">&bull; Submitted <span th:text="${#temporals.format(c.createdAt, 'dd MMM yyyy, hh:mm a')}">Date</span></span>
+                            </div>
+                            <h5 class="fw-bold mb-0">
+                                Item: <a th:href="@{'/items/' + ${c.itemReport.id}}" class="text-dark text-decoration-none" th:text="${c.itemReport.title}">Item Title</a>
+                            </h5>
+                        </div>
+                        <a th:href="@{'/items/' + ${c.itemReport.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            <i class="bi bi-box-arrow-up-right me-1"></i> View Full Item Details
+                        </a>
+                    </div>
+
+                    <div class="row g-3 py-3">
+                        <!-- Claimer Details -->
+                        <div class="col-md-4 border-end">
+                            <span class="text-muted small d-block">Claimer Details</span>
+                            <strong class="d-block" th:text="${c.claimer.fullName}">Alex Johnson</strong>
+                            <div class="small text-secondary">
+                                <i class="bi bi-envelope me-1"></i> <span th:text="${c.claimer.email}">email</span><br>
+                                <i class="bi bi-card-text me-1"></i> ID: <span th:text="${c.claimer.studentId != null ? c.claimer.studentId : 'N/A'}">CSE-01</span><br>
+                                <i class="bi bi-telephone me-1"></i> Phone: <span th:text="${c.contactInfo}">+1-555</span>
+                            </div>
+                        </div>
+
+                        <!-- Statement & Proof -->
+                        <div class="col-md-8">
+                            <div class="mb-2">
+                                <span class="text-muted small d-block">Claim Statement:</span>
+                                <p class="mb-2 text-dark small" th:text="${c.claimDescription}">Statement</p>
+                            </div>
+                            <div class="p-2 bg-light rounded border">
+                                <strong class="small text-danger d-block mb-1"><i class="bi bi-patch-check"></i> Ownership Proof / Distinguishing Marks:</strong>
+                                <p class="mb-0 text-dark small" style="white-space: pre-line;" th:text="${c.proofDetails}">Proof details provided by student...</p>
+                            </div>
+                            <div th:if="${c.adminRemarks != null}" class="mt-2 text-muted small">
+                                <strong>Admin Remarks:</strong> <span th:text="${c.adminRemarks}">Remarks</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Form to Approve / Reject -->
+                    <div class="pt-3 border-top bg-light -mx-4 -mb-4 p-3 rounded-bottom-4">
+                        <form th:action="@{'/admin/claims/' + ${c.id} + '/update'}" method="post" class="row g-2 align-items-center">
+                            <div class="col-md-6">
+                                <input type="text" name="adminRemarks" class="form-control form-control-sm"
+                                       th:value="${c.adminRemarks}"
+                                       placeholder="Add remarks or pickup instructions for student...">
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-md-end gap-2">
+                                <button type="submit" name="status" value="APPROVED" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold">
+                                    <i class="bi bi-check-lg me-1"></i> Approve Claim
+                                </button>
+                                <button type="submit" name="status" value="REJECTED" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">
+                                    <i class="bi bi-x-lg me-1"></i> Reject Claim
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(claims)}" class="col-12 text-center py-5">
+                <i class="bi bi-check2-circle fs-1 text-success d-block mb-2"></i>
+                <h5 class="fw-bold">No Claims Found</h5>
+                <p class="text-muted small">There are currently no claims matching this status filter.</p>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+/* ========================================================
+   Campus Lost & Found Management System - Custom CSS
+   Palette: Deep Navy (#0f172a, #1e3a8a), Purple Accent (#6366f1, #7c3aed), Light Background (#f8fafc)
+   ======================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary-navy: #0f172a;
+    --navy-blue: #1e3a8a;
+    --navy-light: #2563eb;
+    --accent-purple: #7c3aed;
+    --accent-purple-light: #8b5cf6;
+    --accent-purple-soft: #ede9fe;
+    --bg-light: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --badge-lost-bg: #fee2e2;
+    --badge-lost-text: #b91c1c;
+    --badge-found-bg: #dcfce7;
+    --badge-found-text: #15803d;
+    --badge-open-bg: #e0f2fe;
+    --badge-open-text: #0369a1;
+    --badge-claimed-bg: #fef3c7;
+    --badge-claimed-text: #b45309;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/* ========================================================
+   Navbar Styling
+   ======================================================== */
+.navbar-custom {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--primary-navy) !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-brand i {
+    color: var(--accent-purple);
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: #475569 !important;
+    padding: 0.5rem 0.85rem !important;
+    transition: color 0.15s ease-in-out;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--accent-purple) !important;
+}
+
+.nav-btn-lost {
+    background-color: #ef4444;
+    color: #ffffff !important;
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem !important;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.nav-btn-lost:hover {
+    background-color: #dc2626;
+    color: #ffffff !important;
+}
+
+.nav-btn-found {
+    background-color: #10b981;
+    color: #ffffff !important;
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem !important;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.nav-btn-found:hover {
+    background-color: #059669;
+    color: #ffffff !important;
+}
+
+/* ========================================================
+   Hero Section & Cards
+   ======================================================== */
+.hero-section {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+    color: #ffffff;
+    padding: 4.5rem 0 3.5rem;
+    position: relative;
+    border-radius: 0 0 24px 24px;
+}
+
+.hero-title {
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.15rem;
+    color: #cbd5e1;
+    max-width: 650px;
+    margin: 1rem auto 2rem;
+}
+
+.stat-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+/* ========================================================
+   Item Cards
+   ======================================================== */
+.item-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.08);
+}
+
+.item-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background-color: #f1f5f9;
+}
+
+.item-card-image-placeholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 3rem;
+}
+
+.badge-lost {
+    background-color: var(--badge-lost-bg);
+    color: var(--badge-lost-text);
+    font-weight: 700;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.badge-found {
+    background-color: var(--badge-found-bg);
+    color: var(--badge-found-text);
+    font-weight: 700;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.badge-status-open {
+    background-color: var(--badge-open-bg);
+    color: var(--badge-open-text);
+    font-weight: 600;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.badge-status-claimed {
+    background-color: var(--badge-claimed-bg);
+    color: var(--badge-claimed-text);
+    font-weight: 600;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.badge-status-closed {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.badge-status-pending {
+    background-color: #fef3c7;
+    color: #b45309;
+    font-weight: 600;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.badge-status-approved {
+    background-color: #dcfce7;
+    color: #15803d;
+    font-weight: 600;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.badge-status-rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-weight: 600;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+/* ========================================================
+   Form & Card UI
+   ======================================================== */
+.custom-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    padding: 2rem;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #334155;
+    margin-bottom: 0.35rem;
+}
+
+.btn-primary-custom {
+    background-color: var(--accent-purple);
+    border-color: var(--accent-purple);
+    color: #ffffff;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.65rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-custom:hover {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+    color: #ffffff;
+}
+
+.btn-navy {
+    background-color: var(--primary-navy);
+    border-color: var(--primary-navy);
+    color: #ffffff;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.65rem 1.25rem;
+}
+
+.btn-navy:hover {
+    background-color: #1e293b;
+    border-color: #1e293b;
+    color: #ffffff;
+}
+
+/* ========================================================
+   Footer
+   ======================================================== */
+.footer-custom {
+    background-color: #0f172a;
+    color: #94a3b8;
+    padding: 3rem 0 1.5rem;
+    margin-top: 4rem;
+}
+
+.footer-custom a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.footer-custom a:hover {
+    color: #ffffff;
+}
+
+/* ========================================================
+   Tables
+   ======================================================== */
+.table-custom {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.table-custom th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-custom td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    color: #334155;
+    border-bottom: 1px solid var(--border-color);
+}

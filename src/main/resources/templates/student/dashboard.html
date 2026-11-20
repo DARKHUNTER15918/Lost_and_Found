@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Campus Lost & Found</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-4">
+    <div class="container">
+
+        <!-- Welcome Banner -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon" style="background-color: #ede9fe; color: #7c3aed; width: 60px; height: 60px; font-size: 1.8rem;">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1">Hello, <span th:text="${student.fullName}">Student</span>!</h4>
+                        <p class="text-muted small mb-0">
+                            <span th:if="${student.studentId != null}" th:text="'Student ID: ' + ${student.studentId} + ' | '">ID: CSE-01 | </span>
+                            <span th:text="${student.email}">email@campus.edu</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/items/report-lost}" class="btn btn-danger btn-sm rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-search me-1"></i> Report Lost
+                    </a>
+                    <a th:href="@{/items/report-found}" class="btn btn-success btn-sm rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-check2-circle me-1"></i> Report Found
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Alerts -->
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-4 mb-4 text-center">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #e0f2fe; color: #0284c7;">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0" th:text="${totalReports}">0</h3>
+                    <div class="text-muted small">My Reports</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #fee2e2; color: #dc2626;">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-danger" th:text="${openReports}">0</h3>
+                    <div class="text-muted small">Active / Open</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #ede9fe; color: #7c3aed;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0" th:text="${totalClaims}">0</h3>
+                    <div class="text-muted small">Claims Submitted</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <div class="stat-icon mx-auto mb-2" style="background-color: #dcfce7; color: #16a34a;">
+                        <i class="bi bi-patch-check"></i>
+                    </div>
+                    <h3 class="fw-bold mb-0 text-success" th:text="${approvedClaims}">0</h3>
+                    <div class="text-muted small">Claims Approved</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Recent Reports by Student -->
+            <div class="col-lg-7">
+                <div class="custom-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">My Recent Reports</h5>
+                        <a th:href="@{/student/my-reports}" class="text-decoration-none small fw-semibold" style="color: var(--accent-purple);">
+                            View All <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(recentReports)}" class="text-center py-5 text-muted small">
+                        <i class="bi bi-file-earmark-plus fs-2 d-block mb-2 text-muted"></i>
+                        You haven't posted any lost or found items yet.
+                        <div class="mt-3">
+                            <a th:href="@{/items/report-lost}" class="btn btn-outline-danger btn-sm rounded-pill px-3 me-2">Report Lost</a>
+                            <a th:href="@{/items/report-found}" class="btn btn-outline-success btn-sm rounded-pill px-3">Report Found</a>
+                        </div>
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(recentReports)}" class="table-responsive">
+                        <table class="table table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="r : ${recentReports}">
+                                    <td>
+                                        <a th:href="@{'/items/' + ${r.id}}" class="fw-bold text-dark text-decoration-none" th:text="${r.title}">Item</a>
+                                        <div class="text-muted small" th:text="${r.location}">Location</div>
+                                    </td>
+                                    <td>
+                                        <span th:if="${r.reportType.name() == 'LOST'}" class="badge-lost">LOST</span>
+                                        <span th:if="${r.reportType.name() == 'FOUND'}" class="badge-found">FOUND</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${r.status.name() == 'OPEN'}" class="badge-status-open">OPEN</span>
+                                        <span th:if="${r.status.name() == 'CLAIMED'}" class="badge-status-claimed">CLAIMED</span>
+                                        <span th:if="${r.status.name() == 'CLOSED'}" class="badge-status-closed">CLOSED</span>
+                                    </td>
+                                    <td class="small text-muted" th:text="${r.itemDate}">Date</td>
+                                    <td class="text-end">
+                                        <a th:href="@{'/items/' + ${r.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-0" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{'/items/edit/' + ${r.id}}" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-0 ms-1" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Claims by Student -->
+            <div class="col-lg-5">
+                <div class="custom-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">My Recent Claims</h5>
+                        <a th:href="@{/student/my-claims}" class="text-decoration-none small fw-semibold" style="color: var(--accent-purple);">
+                            View All <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(recentClaims)}" class="text-center py-5 text-muted small">
+                        <i class="bi bi-shield fs-2 d-block mb-2 text-muted"></i>
+                        You haven't submitted any claims yet.
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(recentClaims)}" class="d-flex flex-column gap-3">
+                        <div class="p-3 bg-light rounded-3 border" th:each="c : ${recentClaims}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <a th:href="@{'/items/' + ${c.itemReport.id}}" class="fw-bold text-dark text-decoration-none small" th:text="${c.itemReport.title}">Item</a>
+                                <span th:if="${c.status.name() == 'PENDING'}" class="badge-status-pending">PENDING</span>
+                                <span th:if="${c.status.name() == 'APPROVED'}" class="badge-status-approved">APPROVED</span>
+                                <span th:if="${c.status.name() == 'REJECTED'}" class="badge-status-rejected">REJECTED</span>
+                            </div>
+                            <p class="text-muted small mb-2" th:text="${#strings.abbreviate(c.claimDescription, 80)}">Description</p>
+                            <div class="d-flex justify-content-between align-items-center small text-secondary">
+                                <span th:text="${#temporals.format(c.createdAt, 'dd MMM yyyy')}">Date</span>
+                                <a th:href="@{'/items/' + ${c.itemReport.id}}" class="text-primary text-decoration-none">View Item</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
